@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, effect, ElementRef, signal, viewChild } from '@angular/core';
-import mapboxgl from 'mapbox-gl';
+import type mapboxglType from 'mapbox-gl';
 import { environment } from '../../../environments/environment';
 import { DecimalPipe, JsonPipe } from '@angular/common';
 
+declare const mapboxgl: typeof mapboxglType;
 mapboxgl.accessToken = environment.mapboxKey;
 
 
