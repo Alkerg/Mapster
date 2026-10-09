@@ -1,9 +1,11 @@
 import { AfterViewInit, Component, ElementRef, signal, viewChild } from '@angular/core';
-import mapboxgl, { LngLatLike } from 'mapbox-gl';
+import type mapboxglType from 'mapbox-gl';
+import { LngLatLike } from 'mapbox-gl';
 import { environment } from '../../../environments/environment.development';
 import {v4 as UUIDv4} from 'uuid';
 import { JsonPipe } from '@angular/common';
 
+declare const mapboxgl: typeof mapboxglType;
 mapboxgl.accessToken = environment.mapboxKey;
 
 interface Marker{
