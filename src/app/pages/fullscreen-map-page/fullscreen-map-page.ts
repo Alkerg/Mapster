@@ -16,7 +16,6 @@ mapboxgl.accessToken = environment.mapboxKey;
     div {
       width: 100vw;
       height: calc(100vh - 64px);
-      background-color: red;
     }
 
     #controls{

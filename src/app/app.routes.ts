@@ -8,7 +8,7 @@ export const routes: Routes = [
     {
         path: 'fullscreen',
         component: FullscreenMapPage,
-        title: 'FullScreen Map'
+        title: 'Fullscreen Map'
     },
     {
         path: 'markers',
