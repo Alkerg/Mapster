@@ -1,4 +1,22 @@
-<div #map></div>
+<div #map class="map-container"></div>
+<div #searchBoxContainer class="search-box-container absolute top-20 left-5"></div>
+<div #locationDetailContainer class="location-detail-container absolute rounded-lg">
+    <h2 class="text-xl font-bold text-gray-500 text-center mt-15 mb-3">{{locationDetail()?.name}}</h2>
+    <div class="text-sm text-gray-500 px-4">
+
+        <h4><b>Dirección</b>: {{locationDetail()?.address}}</h4>
+        @if(locationDetail()?.categories){
+            <h4><b>Categoría</b>: {{locationDetail()?.categories?.[0] ?? 'Sin categoria' | titlecase}}</h4>
+        }
+        <h4><b>Coordenadas:</b></h4>
+        <ul>
+            <li><b>Longitud: </b>{{locationDetail()?.coordinates?.lng | number:'1.4-4'}}</li>
+            <li><b>Latitud: </b>{{locationDetail()?.coordinates?.lat | number:'1.4-4'}}</li>
+        </ul>
+
+    </div>
+
+</div>
 
 <section id="controls">
     <h2 class="text-2xl font-bold text-black mb-2">
@@ -14,4 +32,5 @@
             } | json
         }}
     </pre>
+
 </section>

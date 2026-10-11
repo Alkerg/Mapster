@@ -1,45 +1,35 @@
 import { AfterViewInit, Component, effect, ElementRef, signal, viewChild } from '@angular/core';
 import type mapboxglType from 'mapbox-gl';
+import { MapboxSearchBox } from '@mapbox/search-js-web';
 import { environment } from '../../../environments/environment';
-import { DecimalPipe, JsonPipe } from '@angular/common';
+import { DecimalPipe, JsonPipe, TitleCasePipe } from '@angular/common';
 
 declare const mapboxgl: typeof mapboxglType;
 mapboxgl.accessToken = environment.mapboxKey;
 
+interface LocationDetail {
+  name: string;
+  address?: string;
+  coordinates: { lng: number; lat: number };
+  categories?: string[];
+}
 
 @Component({
-  imports: [DecimalPipe, JsonPipe],
+  imports: [DecimalPipe, JsonPipe, TitleCasePipe],
   selector: 'app-fullscreen-map-page',
   templateUrl: './fullscreen-map-page.html',
-  styles: `
-  
-    div {
-      width: 100vw;
-      height: calc(100vh - 64px);
-    }
-
-    #controls{
-      background-color: white;
-      padding: 10px;
-      border-radius: 5px;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 999;
-      box-shadow: 0px 0px 10px rgba(0,0,0,1);
-      border: 1px solid #e2e8f0;
-      width: 250px;
-    }
-  
-  `
+  styleUrl: './fullscreen-map-page.css'
 })
 export class FullscreenMapPage implements AfterViewInit {
 
   map = signal<mapboxgl.Map|null>(null);
   divElement = viewChild<ElementRef>('map');
-  zoom = signal(10);
-  coordinates = signal({lng: -71.06776, lat: 42.35816});
+  searchBoxContainer = viewChild<ElementRef>('searchBoxContainer');
+  locationDetailContainer = viewChild<ElementRef>('locationDetailContainer');
 
+  zoom = signal(10);
+  coordinates = signal({lng: -77.0098, lat: -12.0300});
+  locationDetail = signal<LocationDetail|null>(null);
 
   zoomEffect = effect(() => {
     if (!this.map) return;
@@ -57,9 +47,9 @@ export class FullscreenMapPage implements AfterViewInit {
     const { lng, lat } = this.coordinates();
 
     const map = new mapboxgl.Map({
-      container: element, // container ID
-      center: [lng, lat], // starting position [lng, lat]. Note that lat must be set between -90 and 90
-      zoom: this.zoom() // starting zoom
+      container: element,
+      center: [lng, lat],
+      zoom: this.zoom()
     });
 
     this.mapListeners(map);
@@ -83,6 +73,55 @@ export class FullscreenMapPage implements AfterViewInit {
     map.addControl(new mapboxgl.FullscreenControl());
     map.addControl(new mapboxgl.NavigationControl());
     map.addControl(new mapboxgl.ScaleControl());
+    map.addControl(new mapboxgl.GeolocateControl({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      trackUserLocation: true,
+      showAccuracyCircle: false,
+    }));
+
+    // Search Box Control configuration
+    const searchBox = new MapboxSearchBox();
+    searchBox.accessToken = environment.mapboxKey;
+    searchBox.mapboxgl = mapboxgl;
+    searchBox.marker = true;
+    searchBox.options = {
+      language: 'es',
+      country: 'PE',
+    }
+    searchBox.placeholder = 'Buscar ubicación...';
+    searchBox.bindMap(map)
+
+    searchBox.addEventListener('retrieve', (event) => {
+
+      // Show detail panel
+      this.locationDetailContainer()?.nativeElement.classList.add('active');
+
+      const result = event.detail;
+      console.log('Search result:', result);
+      this.locationDetail.set({
+
+        name: result.features[0].properties.name,
+        address: result?.features[0].properties.full_address,
+        coordinates: {
+          lng: result?.features[0].geometry.coordinates[0],
+          lat: result?.features[0].geometry.coordinates[1]
+        },
+        categories: result?.features[0].properties.poi_category
+
+      })
+    });
+
+    searchBox.addEventListener('clear', () => {
+      // Hide detail panel
+      this.locationDetailContainer()?.nativeElement.classList.remove('active');
+      this.locationDetail.set(null);
+    });
+
+    this.searchBoxContainer()?.nativeElement.appendChild(searchBox);
+
+    //map.addControl(searchBox, 'top-left');
 
     this.map.set(map);
     
