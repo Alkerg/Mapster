@@ -1,7 +1,11 @@
 <div #map class="map-container"></div>
-<div #searchBoxContainer class="search-box-container absolute top-20 left-5"></div>
-<div #locationDetailContainer class="location-detail-container absolute rounded-lg">
-    <h2 class="text-xl font-bold text-gray-500 text-center mt-15 mb-3">{{locationDetail()?.name}}</h2>
+<div #searchBoxContainer class="search-box-container absolute top-20 left-5">
+    <search-box [color]="{color: 'red'}" [placeholder]="'Buscar punto de destino...'" [map]="this.map()" (locationDetail)="onLocationDetail($event)" (clear)="onClear($event)"/>
+    <search-box [color]="{color: 'blue'}" [placeholder]="'Buscar punto de origen...'" [map]="this.map()" (locationDetail)="onLocationDetail($event)" (clear)="onClear($event)"/>
+</div>
+
+<div #locationDetailContainer class="location-detail-container p-4 absolute rounded-lg">
+    <h2 class="text-xl font-bold text-gray-500 text-center mt-2 mb-3">{{locationDetail()?.name}}</h2>
     <div class="text-sm text-gray-500 px-4">
 
         <h4><b>Dirección</b>: {{locationDetail()?.address}}</h4>
@@ -14,8 +18,28 @@
             <li><b>Latitud: </b>{{locationDetail()?.coordinates?.lat | number:'1.4-4'}}</li>
         </ul>
 
+        <div class="items-center text-center">
+            <button class="bg-blue-500 hover:bg-blue-700 items-center text-white text-center font-bold mt-4 py-2 px-4 rounded cursor-pointer" (click)="getDirections()">Calcular ruta</button>
+        </div>
+
     </div>
 
+</div>
+
+<div #directionsContainer class="directions-container p-4 absolute rounded-lg">
+    <h2 class="text-xl font-bold text-gray-500 text-center mt-2 mb-3">Ruta estimada</h2>
+    <div class="text-sm text-gray-500 px-4">
+
+        <h4><b>Tipo de transporte</b>: Auto</h4>
+        <h4><b>Distancia</b>: {{distanceBetweenPoints() | number:'1.2-2'}} km</h4>
+        <h4><b>Duración</b>: {{durationBetweenPoints() | number:'1.0-0'}} minutos</h4>
+        <h4><b>Instrucciones</b>:</h4>
+        <ul class="list-disc list-inside">
+            @for(step of steps(); track $index){
+                <li>{{step.instruction}}</li>
+            }
+        </ul>
+    </div>
 </div>
 
 <section id="controls">

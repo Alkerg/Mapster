@@ -5,14 +5,40 @@
 
 .search-box-container {
     width: min(320px, calc(100vw - 2rem));
+    margin-bottom: 0.5rem;
     max-width: calc(100vw - 2rem);
-    z-index: 1000;
+    z-index: 905;
 }
 
-.search-box-container mapbox-search-box {
-    display: block;
-    width: 100%;
+.directions-container {
+    top: -100rem;
+    left: -100rem;
+    width: min(320px, calc(100vw - 2rem));
+    height: min(400px, calc(100vh - 6rem));
+    max-height: calc(100vh - 6rem);
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    background-color: white;
 }
+
+.directions-container.active {
+    top: 11rem;
+    left: 1.25rem;
+    background-color: white;
+    max-width: calc(100vw - 2rem);
+    z-index: 902;
+}
+
+.directions-container > div {
+    overflow-wrap: anywhere;
+}
+
+.search-box {
+    margin: 5px 5px;
+    margin-bottom: 0.5rem;
+}
+
 
 .location-detail-container{
     top: -100rem;
@@ -24,7 +50,7 @@
 
 
 .location-detail-container.active{
-    top: 5rem;
+    top: 11rem;
     left: 1.25rem;
     background-color: white;
     max-width: calc(100vw - 2rem);
